@@ -1,0 +1,8 @@
+{
+  "name": "hormone-therapy-info",
+  "private": true,
+  "dependencies": {
+    "bulma": "^0.8.2",
+    "pandoc-url2cite": "git+https://github.com/Aver1y/pandoc-url2cite.git"
+  }
+}

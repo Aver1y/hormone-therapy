@@ -1,0 +1,6 @@
+citation-cache.json
+dist-newstyle
+dist
+node_modules
+_cache/
+_site/

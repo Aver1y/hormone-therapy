@@ -1,0 +1,57 @@
+@charset "utf-8"
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,500;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap')
+
+$trans-blue: #5BCEFA
+$trans-pink: #F5A9B8
+$family-sans-serif: "Open Sans", sans-serif
+$primary: $trans-pink
+$family-primary: "Lora", serif
+$family-secondary: $family-sans-serif
+$title-family: $family-sans-serif
+
+@import "../node_modules/bulma/bulma.sass"
+
+html
+  scroll-behavior: smooth
+
+.toc:empty
+  display: none
+.toc
+  width: 17rem
+  ul, ol
+    margin-left: 1rem
+
+  > ul, ol
+    position: sticky
+    top: 1rem
+
+    > li
+      margin-bottom: 0.5rem
+      list-style: square
+  a
+    color: $title-color
+    font-family: $title-family
+
+.content
+  h1, h2, h3, h4, h5, h6
+    font-family: $title-family
+  figure
+    margin-left: auto
+    margin-right: auto
+    max-width: 40rem
+
+#refs > *, .footnotes li
+  transition: ease 1s
+#refs > :target, .footnotes li:target
+  background-color: $warning-light
+
+#refs, .footnotes
+  .go-back
+      transition: ease 1s
+      font-weight: 700
+      opacity: 0
+      visibility: hidden
+  *:target .go-back
+      opacity: 1
+      visibility: visible
+

@@ -1,0 +1,65 @@
+name: Haskell CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-haskell@v1
+      with:
+        ghc-version: '8.8.2'
+        cabal-version: '3.0'
+
+    - name: Cache deps
+      uses: actions/cache@v1
+      id:   cache-deps
+      with:
+        path: ~/.cabal
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
+    - name: Cache dist
+      uses: actions/cache@v1
+      id:   cache-dist
+      with:
+        path: dist-newstyle
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project') }}-${{ hashFiles('**/*.hs') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project') }}-
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
+    - name: Install dependencies
+      if: steps.cache-deps.outputs.cache-hit != 'true'
+      run: |
+        cabal update
+        cabal build --only-dependencies --constraint "hakyll -watchserver -previewserver"
+    - name: Build dist
+      if: steps.cache-dist.outputs.cache-hit != 'true'
+      run: cabal build site
+    - name: Build site
+      run: |
+        cabal exec site build
+        touch _site/.nojekyll
+    - name: Check site
+      run: cabal exec site check
+    - name: Deploy
+      if: success() && github.event_name == 'push'
+      uses: crazy-max/ghaction-github-pages@v1
+      with:
+        target_branch: gh-pages
+        build_dir: _site
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
