@@ -83,7 +83,7 @@ fixFootnoteLinks s = go id s
 main :: IO ()
 main = hakyll $ do
     create ["yarn"] $ compile do
-      exitcode <- unsafeCompiler (system "yarn install")
+      exitcode <- unsafeCompiler (system "yarn install --network-concurrency 1")
       case exitcode of
         ExitFailure code ->
           fail $ "yarn install failed with exit code " <> show code
