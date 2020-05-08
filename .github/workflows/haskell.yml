@@ -53,8 +53,6 @@ jobs:
       run: |
         cabal exec site build
         touch _site/.nojekyll
-    - name: Check site
-      run: cabal exec site check
     - name: Deploy
       if: success() && github.event_name == 'push'
       uses: crazy-max/ghaction-github-pages@v1
