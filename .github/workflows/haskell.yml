@@ -13,50 +13,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-haskell@v1
+    - uses: cachix/install-nix-action@v8
+    - uses: cachix/cachix-action@v6
       with:
-        ghc-version: '8.8.3'
-        cabal-version: '3.0'
-
-    - name: Cache deps
-      uses: gerbal/always-cache@v1.0.3
-      id:   cache-deps
-      with:
-        path: ~/.cabal
-        key: ${{ runner.os }}-deps-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project') }}
-        restore-keys: |
-          ${{ runner.os }}-deps
-
-    - name: Cache dist
-      uses: gerbal/always-cache@v1.0.3
-      id:   cache-dist
-      with:
-        path: dist-newstyle
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project') }}-${{ hashFiles('**/*.hs') }}
-        restore-keys: |
-          ${{ runner.os }}-dist-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project') }}-
-          ${{ runner.os }}-dist-
-
-    - name: Cache yarn
-      uses: gerbal/always-cache@v1.0.3
-      id:   cache-yarn
-      with:
-        path: dist-newstyle
-        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
-
-    - name: Install dependencies
-      if: steps.cache-deps.outputs.cache-hit != 'true'
+        name: aver1y
+        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - name: Build
       run: |
-        cabal update
-        cabal build --only-dependencies --constraint "hakyll -watchserver -previewserver"
-    - name: Build dist
-      if: steps.cache-dist.outputs.cache-hit != 'true'
-      run: cabal build site
+        nix-shell -p cabal2nix --run 'cabal2nix . > hormone-therapy-info.nix'
+        nix-build
     - name: Build site
       run: |
-        cabal exec site build
+        result/bin/site rebuild
         touch _site/.nojekyll
     - name: Deploy
       if: success() && github.event_name == 'push'
