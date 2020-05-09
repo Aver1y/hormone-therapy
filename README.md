@@ -1,9 +1,9 @@
 # Build
 
-**Dependencies:**
+**System dependencies:**
 
 - yarn
-- cabal
+- pandoc-citeproc
 
 ```
 $ cabal build
