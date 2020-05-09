@@ -43,7 +43,8 @@ pandocFilter (Pandoc meta content) =
   where annotated = Pandoc
           (setMeta "citation-style" ("style.csl" :: String) .
            setMeta "reference-section-title" ("References" :: String) .
-           setMeta "link-citations" ("true" :: String) $
+           setMeta "link-citations" ("true" :: String) .
+           setMeta "url2cite-cache" ("citation-cache/cache.json" :: String) $
            meta)
           content
         addBack :: Pandoc -> Pandoc

@@ -23,8 +23,8 @@ jobs:
       id: cache-citations
       uses: actions/cache@v1
       with:
-        path: citation-cache.json
-        key: ciatation-cache.json
+        path: citation-cache
+        key: citation-cache
     - name: Cache node_modules
       id: cache-node_modules
       uses: actions/cache@v1
