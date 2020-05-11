@@ -24,6 +24,7 @@ import Data.Functor
 import qualified Text.Regex.TDFA as X
 import System.Process (system)
 import System.Exit (ExitCode(..))
+import Text.Pandoc.CrossRef (runCrossRef, crossRefBlocks)
 
 readerOptions :: P.ReaderOptions
 readerOptions = defaultHakyllReaderOptions
@@ -37,16 +38,23 @@ url2CiteFilterPath = "node_modules/pandoc-url2cite/dist/pandoc-url2cite.js"
 --   bibliography
 pandocFilter :: Pandoc -> P.PandocIO Pandoc
 pandocFilter (Pandoc meta content) =
-  fmap addBack . liftIO . processCites'
+  fmap addBack . liftIO . processCites' . crossRef
   <=< P.applyFilters readerOptions
        [P.JSONFilter url2CiteFilterPath] ["html"] $ annotated
   where annotated = Pandoc
           (setMeta "citation-style" ("style.csl" :: String) .
            setMeta "reference-section-title" ("References" :: String) .
-           setMeta "link-citations" ("true" :: String) .
-           setMeta "url2cite-cache" ("citation-cache/cache.json" :: String) $
+           setMeta "link-citations" True .
+           setMeta "url2cite-cache" ("citation-cache/cache.json" :: String) .
+           setMeta "url2cite-allow-dangling-citations" False .
+           setMeta "linkReferences" True .
+           setMeta "nameInLink" True .
+           setMeta "tableEqns" True $
            meta)
           content
+        crossRef :: Pandoc -> Pandoc
+        crossRef (Pandoc meta blocks) =
+          Pandoc meta $ runCrossRef meta (Just "html") crossRefBlocks blocks
         addBack :: Pandoc -> Pandoc
         addBack (Pandoc meta blocks) = Pandoc meta $ blocks <&>
           \case
