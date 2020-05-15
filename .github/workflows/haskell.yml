@@ -33,11 +33,12 @@ jobs:
         key: node_modules
     - name: Build
       run: |
+        yarn install --network-concurrency 1
         nix-shell -p cabal2nix --run 'cabal2nix . > hormone-therapy-info.nix'
         nix-build
     - name: Build site
       run: |
-        nix-shell --run "result/bin/site rebuild"
+        result/bin/site rebuild
         touch _site/.nojekyll
     - name: Deploy
       if: success() && github.event_name == 'push'

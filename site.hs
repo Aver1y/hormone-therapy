@@ -91,20 +91,13 @@ fixFootnoteLinks s = go id s
 
 main :: IO ()
 main = hakyll $ do
-    create ["yarn"] $ compile do
-      exitcode <- unsafeCompiler (system "yarn install --network-concurrency 1")
-      case exitcode of
-        ExitFailure code ->
-          fail $ "yarn install failed with exit code " <> show code
-        ExitSuccess -> pure $ Item "yarn" ()
-
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
 
     match ("css/*.sass" .||. "css/*.scss") $ do
       route $ setExtension "css"
-      compile $ load @() "yarn" *> (fmap compressCss <$> sassCompiler)
+      compile $ fmap compressCss <$> sassCompiler
 
     match "css/*.css" $ do
       route   idRoute
@@ -113,7 +106,6 @@ main = hakyll $ do
     match "posts/**.md" $ do
         route $ setExtension "html"
         compile $ do
-          _ <- load @() "yarn"
           pandoc@(Item ident (Pandoc meta content)) <-
              either (fail . show) pure
              =<< ((getCompose .) . traverse . (Compose .))
