@@ -3,4 +3,4 @@ packages: .
 source-repository-package
   type: git
   location: https://github.com/Aver1y/pandoc-url2cite-hs
-  tag: 4e01e607e8f9d9f9a9a312aa579dbb318b62465a
+  tag: d6fac9756f0954c4b9911113f9639dcbba5d8a0f
