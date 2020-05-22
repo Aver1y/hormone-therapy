@@ -34,7 +34,6 @@ jobs:
     - name: Build
       run: |
         yarn install --network-concurrency 1
-        nix-shell -p cabal2nix --run 'cabal2nix . > hormone-therapy-info.nix'
         nix-build
     - name: Build site
       run: |
