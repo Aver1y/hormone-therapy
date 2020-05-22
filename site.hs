@@ -103,7 +103,7 @@ main = hakyll $ do
       route   idRoute
       compile compressCssCompiler
 
-    match "posts/**.md" $ do
+    match ("posts/**.md" .||. "posts/**.odt" .||. "posts/**.tex" .||. "posts/**.html") $ do
         route $ setExtension "html"
         compile $ do
           pandoc@(Item ident (Pandoc meta content)) <-
