@@ -1,8 +1,6 @@
-hormone-therapy-info.nix
-result
-citation-cache.json
-dist-newstyle
-dist
-node_modules
-_cache/
-_site/
+/.cache
+/result
+/dist-newstyle
+/node_modules
+/_cache/
+/_site/
