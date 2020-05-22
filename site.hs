@@ -25,28 +25,30 @@ import qualified Text.Regex.TDFA as X
 import System.Process (system)
 import System.Exit (ExitCode(..))
 import Text.Pandoc.CrossRef (runCrossRef, crossRefBlocks)
+import qualified Text.Pandoc.Url2Cite as U2C
 
 readerOptions :: P.ReaderOptions
 readerOptions = defaultHakyllReaderOptions
 writerOptions :: P.WriterOptions
 writerOptions = defaultHakyllWriterOptions
 
-url2CiteFilterPath :: FilePath
-url2CiteFilterPath = "node_modules/pandoc-url2cite/dist/pandoc-url2cite.js"
+u2cConf :: U2C.Configuration
+u2cConf = U2C.def{
+  U2C._allowDangling = U2C.AllowDangling,
+  U2C._cache = U2C.Cache ".cache/citations.json",
+  U2C._linkOutput = U2C.Sup
+  }
 
 -- | Feeds the pandoc through citeproc and url2cite and adds go-back links to
 --   bibliography
-pandocFilter :: Pandoc -> P.PandocIO Pandoc
+pandocFilter :: Pandoc -> IO Pandoc
 pandocFilter (Pandoc meta content) =
-  fmap addBack . liftIO . processCites' . crossRef
-  <=< P.applyFilters readerOptions
-       [P.JSONFilter url2CiteFilterPath] ["html"] $ annotated
+  fmap addBack . processCites' . crossRef <=< U2C.url2citeWith u2cConf
+  $ annotated
   where annotated = Pandoc
           (setMeta "citation-style" ("style.csl" :: String) .
            setMeta "reference-section-title" ("References" :: String) .
            setMeta "link-citations" True .
-           setMeta "url2cite-cache" ("citation-cache/cache.json" :: String) .
-           setMeta "url2cite-allow-dangling-citations" False .
            setMeta "linkReferences" True .
            setMeta "nameInLink" True .
            setMeta "tableEqns" True $
@@ -107,9 +109,7 @@ main = hakyll $ do
         route $ setExtension "html"
         compile $ do
           pandoc@(Item ident (Pandoc meta content)) <-
-             either (fail . show) pure
-             =<< ((getCompose .) . traverse . (Compose .))
-               (unsafeCompiler . P.runIO . pandocFilter)
+             traverse (unsafeCompiler . pandocFilter)
              =<< readPandocWith readerOptions
              =<< getResourceString
           let renderedBody =
