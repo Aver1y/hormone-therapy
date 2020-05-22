@@ -1,10 +1,10 @@
-name:               hormone-therapy-info
+name:               site-gen
 version:            0.1.0.0
 build-type:         Simple
 cabal-version:      >= 2
 
-executable site
-  main-is:          site.hs
+executable site-gen
+  main-is:          site-gen.hs
   build-depends:    base >= 4.13.0 && < 4.15
                   , hakyll ^>= 4.13.3
                   , hakyll-sass ^>= 0.2.4

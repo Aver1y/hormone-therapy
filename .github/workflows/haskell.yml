@@ -37,7 +37,7 @@ jobs:
         nix-build
     - name: Build site
       run: |
-        result/bin/site rebuild
+        result/bin/site-gen build
         touch _site/.nojekyll
     - name: Deploy
       if: success() && github.event_name == 'push'

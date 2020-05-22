@@ -5,7 +5,7 @@ with nixpkgs;
 with haskell.packages.${compiler};
 
 developPackage {
-  root = ./.;
+  root = ./site-gen;
   source-overrides = {
     pandoc-url2cite-hs = fetchFromGitHub {
       owner = "Aver1y";

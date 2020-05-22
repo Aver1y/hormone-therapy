@@ -1,4 +1,4 @@
-packages: .
+packages: site-gen
 
 source-repository-package
   type: git
