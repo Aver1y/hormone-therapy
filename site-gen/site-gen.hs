@@ -33,7 +33,7 @@ writerOptions :: P.WriterOptions
 writerOptions = defaultHakyllWriterOptions
 
 u2cConf :: U2C.Configuration
-u2cConf = U2C.def{
+u2cConf = U2C.def {
   U2C._allowDangling = U2C.AllowDangling,
   U2C._cache = U2C.Cache "citation-cache/cache.json",
   U2C._linkOutput = U2C.Sup
