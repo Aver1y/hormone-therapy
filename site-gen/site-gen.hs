@@ -26,6 +26,7 @@ import System.Process (system)
 import System.Exit (ExitCode(..))
 import Text.Pandoc.CrossRef (runCrossRef, crossRefBlocks)
 import qualified Text.Pandoc.Url2Cite as U2C
+import System.FilePath
 
 readerOptions :: P.ReaderOptions
 readerOptions = defaultHakyllReaderOptions
@@ -105,8 +106,8 @@ main = hakyll $ do
       route   idRoute
       compile compressCssCompiler
 
-    match ("posts/**.md" .||. "posts/**.odt" .||. "posts/**.tex" .||. "posts/**.html") $ do
-        route $ setExtension "html"
+    match ("content/**.md" .||. "content/**.odt" .||. "content/**.tex" .||. "content/**.html") $ do
+        route $ customRoute (\(splitPath . toFilePath -> (_:xs)) -> joinPath xs -<.> "html")
         compile $ do
           pandoc@(Item ident (Pandoc meta content)) <-
              traverse (unsafeCompiler . pandocFilter)
@@ -130,7 +131,7 @@ main = hakyll $ do
     match "index.md" $ do
         route $ setExtension "html"
         compile $ do
-            posts <- recentFirst =<< loadAll "posts/*"
+            posts <- recentFirst =<< loadAll "content/**"
             let indexCtx =
                     titleFieldContext `mappend`
                     listField "posts" postCtx (return posts) `mappend`
