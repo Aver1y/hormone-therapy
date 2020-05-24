@@ -34,7 +34,7 @@ jobs:
     - name: Build
       run: |
         yarn install --network-concurrency 1
-        nix-build
+        nix-build static.nix
     - name: Build site
       run: |
         result/bin/site-gen build
