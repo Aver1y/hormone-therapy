@@ -5,7 +5,7 @@ cabal-version:      >= 2
 
 executable site-gen
   main-is:          site-gen.hs
-  build-depends:    base >= 4.13.0 && < 4.15
+  build-depends:    base >= 4.12.0 && < 4.15
                   , hakyll ^>= 4.13.3
                   , hakyll-sass ^>= 0.2.4
                   , pandoc ^>= 2.9.1
@@ -13,7 +13,7 @@ executable site-gen
                   , pandoc-citeproc >= 0.16 && <0.18
                   , pandoc-crossref ^>= 0.3.6
                   , regex-tdfa ^>= 1.3.1
-                  , process ^>= 1.6.8
+                  , process ^>= 1.6.5
                   , pandoc-url2cite-hs ^>= 0.1.0
                   , filepath ^>= 1.4
   ghc-options:      -threaded
