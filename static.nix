@@ -17,15 +17,10 @@ let
         overrides = pkgs.lib.composeExtensions
           (self: super: {
             pandoc-citeproc = self.pandoc-citeproc_0_17;
-            pandoc-url2cite-hs = self.callCabal2nix "pandoc-url2cite-hs" (pkgs.fetchFromGitHub {
-              owner = "Aver1y";
-              repo = "pandoc-url2cite-hs";
-              rev = "5e16501451cf232e71e7b8ecd4d880ef0a86f18f";
-              sha256 = "1wasf2lw1nimli57jzpbdqjq5n4lyz2nzqfbpqbxacc2j94ax72m";
-            }) {};
+            pandoc-url2cite-hs = self.callPackage ./pandoc-url2cite-hs.nix {};
             hakyll = pkgs.haskell.lib.doJailbreak super.hakyll;
             site-gen = pkgs.haskell.lib.appendConfigureFlag
-              (self.callCabal2nix "site-gen" ./site-gen {})
+              (self.callPackage site-gen/site-gen.nix {})
               # Similar to https://github.com/nh2/static-haskell-nix/issues/10
               "--ld-option=-Wl,--start-group --ld-option=-Wl,-lstdc++";
           })
