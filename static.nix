@@ -16,26 +16,20 @@ let
     .override (old: {
         overrides = pkgs.lib.composeExtensions
           (self: super: {
-            site-gen = self.developPackage {
-              root = ./site-gen;
-              source-overrides = {
-                pandoc-url2cite-hs = pkgs.fetchFromGitHub {
-                  owner = "Aver1y";
-                  repo = "pandoc-url2cite-hs";
-                  rev = "5e16501451cf232e71e7b8ecd4d880ef0a86f18f";
-                  sha256 = "1wasf2lw1nimli57jzpbdqjq5n4lyz2nzqfbpqbxacc2j94ax72m";
-                };
-              };
-              overrides = self: super: {
-                pandoc-citeproc = self.pandoc-citeproc_0_17;
-              };
-              modifier = drv: pkgs.haskell.lib.appendConfigureFlag drv [
-                # Similar to https://github.com/nh2/static-haskell-nix/issues/10
-                "--ld-option=-Wl,--start-group --ld-option=-Wl,-lstdc++"
-              ];
-            };
+            pandoc-citeproc = self.pandoc-citeproc_0_17;
+            pandoc-url2cite-hs = self.callCabal2nix "pandoc-url2cite-hs" (pkgs.fetchFromGitHub {
+              owner = "Aver1y";
+              repo = "pandoc-url2cite-hs";
+              rev = "5e16501451cf232e71e7b8ecd4d880ef0a86f18f";
+              sha256 = "1wasf2lw1nimli57jzpbdqjq5n4lyz2nzqfbpqbxacc2j94ax72m";
+            }) {};
+            hakyll = pkgs.haskell.lib.doJailbreak super.hakyll;
+            site-gen = pkgs.haskell.lib.appendConfigureFlag
+              (self.callCabal2nix "site-gen" ./site-gen {})
+              # Similar to https://github.com/nh2/static-haskell-nix/issues/10
+              "--ld-option=-Wl,--start-group --ld-option=-Wl,-lstdc++";
           })
           (old.overrides or (_: _: {}));
       });
 in
-haskellPackages.site-gen
+pkgs.haskell.lib.shellAware haskellPackages.site-gen
