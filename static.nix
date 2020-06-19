@@ -2,13 +2,7 @@
 , compiler ? "ghc865"
 }:
 let
-  static-haskell-nix = pkgs.fetchFromGitHub {
-    owner = "nh2";
-    repo = "static-haskell-nix";
-    rev = "dbce18f4808d27f6a51ce31585078b49c86bd2b5";
-    sha256 = "084hxnrywsgb73zr41argdkbhkxzm1rqn058pv1l4cp9g1gjr2rr";
-  };
-  survey = import "${static-haskell-nix}/survey" {
+  survey = import static-haskell-nix/survey {
     normalPkgs = pkgs;
     inherit compiler;
   };

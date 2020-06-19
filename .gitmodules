@@ -1,0 +1,3 @@
+[submodule "static-haskell-nix"]
+	path = static-haskell-nix
+	url = https://github.com/nh2/static-haskell-nix

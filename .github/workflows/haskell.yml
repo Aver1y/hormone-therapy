@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - uses: cachix/install-nix-action@v8
     - uses: cachix/cachix-action@v6
       with:
