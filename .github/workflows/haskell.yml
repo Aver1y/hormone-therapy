@@ -15,8 +15,16 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
+    - name: Cache gen-cached
+      id: cache-gen
+      uses: actions/cache@v1
+      with:
+        path: gen-cached
+        key: ${{ runner.os }}-${{ hashFiles('**/*.nix') }}-${{ hashFiles('hack-out-of-store.sh') }}-${{ hashFiles('site-gen/*') }}
     - uses: cachix/install-nix-action@v8
+      if: steps.cache-gen.outputs.cache-hit != 'true'
     - uses: cachix/cachix-action@v6
+      if: steps.cache-gen.outputs.cache-hit != 'true'
       with:
         name: aver1y
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
@@ -34,12 +42,14 @@ jobs:
         path: node_modules
         key: node_modules
     - name: Build
+      if: steps.cache-gen.outputs.cache-hit != 'true'
       run: |
         yarn install --network-concurrency 1
         nix-build static.nix
+        ./hack-out-of-store.sh
     - name: Build site
       run: |
-        result/bin/site-gen build
+        gen-cached/site-gen build
         touch _site/.nojekyll
     - name: Deploy
       if: success() && github.event_name == 'push'
